@@ -84,11 +84,12 @@ void read_input(
 
 	int local_ok = 1;
 
-	fscanf(fp, "%d ", np);
-	fscanf(fp, "%lf ", errp);
-
-	MPI_Bcast(np, 1, MPI_INT, 0, comm);
-	MPI_Bcast(errp, 1, MPI_DOUBLE, 0, comm);
+	if (my_rank == 0) {
+		fscanf(fp, "%d ", np);
+		fscanf(fp, "%lf ", errp);
+	}
+		MPI_Bcast(np, 1, MPI_INT, 0, comm);
+		MPI_Bcast(errp, 1, MPI_DOUBLE, 0, comm);
 
 	if (*np % comm_sz != 0) local_ok = 0;
 	Check_for_error(local_ok, "read_input", 
