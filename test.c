@@ -64,13 +64,7 @@ int main(void) {
 	Get_dims(&m, &local_m, &n, &local_n, my_rank, comm_sz, comm);
 	Allocate_arrays(&local_A, &local_x, &local_y, local_m, n, local_n, comm);
 	Read_matrix("A", local_A, m, local_m, n, my_rank, comm);
-#  ifdef DEBUG
-	Print_matrix("A", local_A, m, local_m, n, my_rank, comm);
-#  endif
 	Read_vector("x", local_x, n, local_n, my_rank, comm);
-#  ifdef DEBUG
-	Print_vector("x", local_x, n, local_n, my_rank, comm);
-#  endif
 
 	Mat_vect_mult(local_A, local_x, local_y, local_m, n, local_n, comm);
 

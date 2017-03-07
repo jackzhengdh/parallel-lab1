@@ -13,7 +13,7 @@ float err; /* The absolute relative error */
 int num = 0;  /* number of unknowns */
 
 
-/****** Function declarations */
+/****** Function declarations ******/
 void check_matrix(); /* Check whether the matrix will converge */
 void get_input();  /* Read input from file */
 
@@ -62,8 +62,52 @@ void Check_for_error(
 	}
 }  /* Check_for_error */
 
+/*-------------------------------------------------------------------
+ * Function:  Read_input
+ * Purpose:   Get the dimensions of the matrix and the vectors from
+ *            stdin.
+ * In args:   my_rank:   calling processes rank in comm
+ *            comm_sz:   number of processes in comm
+ *            comm:      communicator containing all processes calling
+ *                       Read_input
+ * Out args:  n_p:       global number of variables
+ *            local_n_p: local number of variables
+ *
+ * Errors:    if either m or n isn't positive or if m or n isn't evenly
+ *            divisible by comm_sz, the program prints an error message
+ *            and quits.
+ * Note:
+ *    All processes in comm should call Read_input
+ */
+void Read_input(
+	char		filename[] 	/* in */,
+	int*		n_p 		/* out */, 
+	int*		local_n_p 	/* out */,
+	double*		err 		/* out */, 
+	int 		my_rank 	/* in  */,
+	int 		comm_sz 	/* in  */,
+	MPI_Comm 	comm 		/* in  */) {
 
+	int local_ok = 1;
+	FILE* fp;
+	fp = fopen(filename, "r");
+	if (!fp) local_ok = 0;
+	Check_for_error(local_ok, "Read_input", "Cannot open file", comm);
 
+	if (my_rank == 0) {
+		fscanf(fp, "%d", n_p);
+		fscanf(fp, "%lf", err);
+	}
+	MPI_Bcast(n_p, 1, MPI_INT, 0, comm);
+	MPI_Bcast(err, 1, MPI_INT, 0, comm);
+	if (*n_p <= 0 || *n_p % comm_sz != 0 ) local_ok = 0;
+	Check_for_error(local_ok, "Read_input",
+		"number of variables must be positive and divisible by comm_sz",
+		comm);
+	*local_n_p = *n_p/comm_sz;
+
+	
+}  /* Read_input */
 
 /* 
 	 Conditions for convergence (diagonal dominance):
