@@ -12,7 +12,7 @@ void allocate_arrays(double** local_A_pp, double** local_b_pp,
 void read_matrix(FILE* fp, double local_A[], double local_b[],
 	double local_x[], int n, int local_n, int my_rank, MPI_Comm comm);
 void print_matrix(double local_A[], double local_b[], 
-	double local_x[] int n, int local_n, int my_rank, MPI_Comm comm);
+	double local_x[], int n, int local_n, int my_rank, MPI_Comm comm);
 
 int main(int argc, char *argv[]) {
 	
@@ -104,10 +104,10 @@ void allocate_arrays(
 
 	*local_A_pp = malloc(local_n*n*sizeof(double));
 	*local_x_pp = malloc(local_n*sizeof(double));
-	*local_y_pp = malloc(local_n*sizeof(double));
+	*local_b_pp = malloc(local_n*sizeof(double));
 
 	if (*local_A_pp == NULL || local_x_pp == NULL ||
-			local_y_pp == NULL) local_ok = 0;
+			local_b_pp == NULL) local_ok = 0;
 	Check_for_error(local_ok, "allocate_arrays",
 			"Can't allocate local arrays", comm);
 }
@@ -140,7 +140,7 @@ void read_matrix(
 		for (i = 0; i < n; i++) {
 			for (j = 0; j < n; j++)
 				fscanf(fp, "%lf", &A[i]); // read coefficients a
-			fscanf(fp, "%lf", %b[i]); // read coefficients b
+			fscanf(fp, "%lf", &b[i]); // read coefficients b
 		}
 		MPI_Scatter(x, local_n, MPI_DOUBLE, 
 			local_x, local_n, MPI_DOUBLE, 0, comm);
