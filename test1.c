@@ -19,10 +19,10 @@ int main(int argc, char *argv[]) {
 	double* local_A;
 	double* local_b;
 	double* local_x;
-	int n, local_n;
 	double err;
+	int n, local_n;
 	int my_rank, comm_sz;
-	double* x;
+	MPI_Comm comm;
 
 	if(argc != 2) {
 		printf("Incorrect number of arguments\n");
@@ -32,8 +32,6 @@ int main(int argc, char *argv[]) {
 	char *filename = argv[1];
 	FILE* fp;
 	fp = fopen(filename, "r");
-
-	MPI_Comm comm;
 
 	MPI_Init(NULL, NULL);
 	comm = MPI_COMM_WORLD;
@@ -45,6 +43,12 @@ int main(int argc, char *argv[]) {
 	read_matrix(fp, local_A, local_b, local_x, n, local_n, my_rank, comm);
 	print_matrix(local_A, local_b, local_x, n, local_n, my_rank, comm);
 
+	free(local_A);
+	free(local_b);
+	free(local_x);
+
+	MPI_Finalize();
+	return 0;
 }
 
 void Check_for_error(
