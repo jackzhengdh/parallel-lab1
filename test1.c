@@ -70,7 +70,7 @@ void Check_for_error(
 }
 
 void read_input(
-	File* 		fp 			/* in */, 
+	FILE* 		fp 			/* in */, 
 	int* 		np 			/* out */, 
 	int*		local_np 	/* out */,
 	double* 	errp 		/* out */,
