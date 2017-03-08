@@ -5,6 +5,8 @@
 
 // this version works - read input and print output
 
+void Check_for_error(int local_ok, char fname[], char message[],
+	MPI_Comm comm);
 void Read_top(FILE* fp, int* n_p, int* local_n_p, double* err_p,
 	int my_rank, int comm_sz, MPI_Comm comm);
 void Print_top(int n, double err, int my_rank, MPI_Comm comm);
@@ -48,6 +50,27 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
+void Check_for_error(
+	int 		local_ok 	/* in */,
+	char 		fname[] 	/* in */,
+	char 		message[] 	/* in */,
+	MPI_Comm 	comm 		/* in */) {
+
+	int ok;
+
+	MPI_Allreduce(&local_ok, &ok, 1, MPI_INT, MPI_INT, comm);
+	if (ok == 0) {
+		int my_rank;
+		MPI_Comm_rank(comm, &my_rank);
+		if (my_rank == 0) {
+			fprintf(stderr, "Proc %d Func %s, %s\n", my_rank, fname, message);
+			fflush(stderr);
+		}
+		MPI_Finalize();
+		exit(-1);
+	}
+}
+
 void Read_top(
 	FILE* 		fp 			/* in  */,
 	int* 		n_p 		/* out */,
@@ -57,6 +80,8 @@ void Read_top(
 	int 		comm_sz 	/* in  */,
 	MPI_Comm 	comm 		/* in  */) {
 
+	int local_ok = 1;
+
 	if (my_rank == 0) {
 		printf("Reading numbers...\n");
 		fscanf(fp, "%d", n_p);
@@ -64,6 +89,9 @@ void Read_top(
 	}
 	MPI_Bcast(n_p, 1, MPI_INT, 0, comm);
 	MPI_Bcast(err_p, 1, MPI_DOUBLE, 0, comm);
+	if (*n_p % comm_sz != 0) local_ok = 0;
+	Check_for_error(local_ok, "Read_top", 
+		"number of equations must be divisible by comm_sz", comm);
 	*local_n_p = *n_p/comm_sz;
 }
 
@@ -74,8 +102,8 @@ void Print_top(
 	MPI_Comm 	comm 		/* in  */) {
 
 	if (my_rank == 0) {
-		printf("The number entered was %d\n", n);
-		printf("Value of error was %lf\n", err);
+		printf("Number of equations: %d\n", n);
+		printf("Allowance for error: %lf\n", err);
 	}
 }
 
@@ -90,6 +118,12 @@ void Allocate_arrays(
 	*local_A_pp = malloc(local_n*n*sizeof(double));
 	*local_b_pp = malloc(local_n*sizeof(double));
 	*local_x_pp = malloc(local_n*sizeof(double));
+
+	if (*local_A_pp == NULL || *local_b_pp == NULL ||
+		*local_x_pp == NULL)
+		local_ok = 0;
+	Check_for_error(local_ok, "Allocate_arrays",
+		"Cannot allocate local arrays", comm);
 }
 void Read_content(
 	FILE* 		fp 			/* in  */,
@@ -105,12 +139,16 @@ void Read_content(
 	double* b = NULL;
 	double* x = NULL;
 	int i, j;
+	int local_ok = 1;
 
 	if (my_rank == 0) {
 		A = malloc(n*n*sizeof(double));
 		b = malloc(n*sizeof(double));
 		x = malloc(n*sizeof(double));
-		printf("Logging in values of x\n");
+		if (A == NULL || b == NULL || x == NULL) local_ok = 0;
+		Check_for_error(local_ok, "Read_content",
+			"Cannot allocate temporary arrays", comm);
+		
 		for (i = 0; i < n; i++)
 			fscanf(fp, "%lf", &x[i]);
 		for (i = 0; i < n; i++) {
@@ -150,11 +188,15 @@ void Print_content(
 	double* b = NULL;
 	double* x = NULL;
 	int i, j;
+	int local_ok = 1;
 
 	if (my_rank == 0) {
 		A = malloc(n*n*sizeof(double));
 		b = malloc(n*sizeof(double));
 		x = malloc(n*sizeof(double));
+		if (A == NULL || b == NULL || x == NULL) local_ok = 0;
+		Check_for_error(local_ok, "Print_content",
+			"Cannot allocate temporary arrays", comm);		
 		MPI_Gather(local_A, n*local_n, MPI_DOUBLE,
 			A, n*local_n, MPI_DOUBLE, 0, comm);
 		MPI_Gather(local_b, local_n, MPI_DOUBLE,
@@ -165,11 +207,11 @@ void Print_content(
 		printf("\nPrinting values of x\n");
 		for (i = 0; i < n; i++)
 			printf("%f ", x[i]);
-		printf("\nPrinting content of matrix\n");
+		printf("\n\nPrinting content of matrix\n");
 		for (i = 0; i < n; i++) {
 			for (j = 0; j < n; j++)
 				printf("%f ", A[i*n+j]);
-			printf("%f ", b[i]);
+			printf("\t\t%f\n", b[i]);
 		}
 		free(A);
 		free(b);
