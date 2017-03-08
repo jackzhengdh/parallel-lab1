@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 	MPI_Finalize();
 	if (my_rank == 0) {
 		printf("my_rank = 0, closing file\n");
-		fp.close();
+		fclose(fp);
 	}
 	return 0;
 }
