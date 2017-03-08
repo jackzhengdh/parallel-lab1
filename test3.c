@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(comm, &my_rank);
 
 	Read_top(fp, &n, &local_n, &err, my_rank, comm_sz, comm);
-	// Read_x(fp, local_x, n, local_n, my_rank, comm);
+	Read_x(fp, local_x, n, local_n, my_rank, comm);
 	Print_top(n, err, my_rank, comm);
 
 	MPI_Finalize();
