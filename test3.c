@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(comm, &my_rank);
 
 	Read_top(fp, &n, &local_n, &err, my_rank, comm_sz, comm);
-	Allocate_arrays(local_A, local_b, local_x, n, local_n, comm);
+	Allocate_arrays(&local_A, &local_b, &local_x, n, local_n, comm);
 	Read_content(fp, local_A, local_b, local_x, n, local_n, my_rank, comm);
 	Print_top(n, err, my_rank, comm);
 	Print_content(local_A, local_b, local_x, n, local_n, my_rank, comm);
@@ -123,11 +123,15 @@ void Read_content(
 		MPI_Scatter(b, local_n, MPI_DOUBLE, 
 			local_b, local_n, MPI_DOUBLE, 0, comm);
 		MPI_Scatter(x, local_n, MPI_DOUBLE, 
-			local_x, local_n, MPI_DOUBLE, 0, comm);		
+			local_x, local_n, MPI_DOUBLE, 0, comm);
 		free(A);
 		free(b);
 		free(x);
 	} else {
+		MPI_Scatter(A, n*local_n, MPI_DOUBLE, 
+			local_A, n*local_n, MPI_DOUBLE, 0, comm);
+		MPI_Scatter(b, local_n, MPI_DOUBLE, 
+			local_b, local_n, MPI_DOUBLE, 0, comm);
 		MPI_Scatter(x, local_n, MPI_DOUBLE, 
 			local_x, local_n, MPI_DOUBLE, 0, comm);
 	}
