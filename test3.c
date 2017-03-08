@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(comm, &my_rank);
 
 	Read(fp, &n, &err, my_rank, comm);
-	Print(n, my_rank, comm);
+	Print(n, err, my_rank, comm);
 
 	MPI_Finalize();
 	return 0;
