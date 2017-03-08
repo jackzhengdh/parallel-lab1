@@ -3,10 +3,8 @@
 #include <math.h>
 #include <mpi.h>
 
-void Check_for_error(int local_ok, char fname[], char message[], 
-	MPI_Comm comm);
 void read(FILE* fp, int* np, int my_rank, int comm_sz, MPI_Comm comm);
-void print(int n, int my_rank, int comm_sz, MPI_Comm comm);
+void print(int n, int my_rank, MPI_Comm comm);
 
 
 // void read_input(FILE* fp, int* np, int* local_np, double* errp,
