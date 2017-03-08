@@ -4,6 +4,7 @@
 #include <mpi.h>
 
 void Read(int* n_p, int my_rank, MPI_Comm comm);
+void Print(int n, int my_rank, MPI_Comm comm);
 
 int main(void) {
 	int n, local_n;
@@ -23,6 +24,7 @@ int main(void) {
 	MPI_Comm_rank(comm, &my_rank);
 
 	Read(&n, my_rank, comm);
+	Print(n, my_rank, comm);
 
 	MPI_Finalize();
 	return 0;
