@@ -197,11 +197,16 @@ void Print_content(
 	int i, j;
 	int local_ok = 1;
 
-	printf("*****************\nmy_rank = %d*****************\n", my_rank);
-	for (i = 0; i < local_n; i++) {
-		for (j = 0; j < n; j++)
-			printf("%f ", local_A[i*n+j]);
-		printf("%f\n", local_b[i]);
+	int r;
+	for (r = 0; r < 4; r++) {
+		if (my_rank == r) {
+			printf("***************** my_rank = %d *****************\n", my_rank);
+			for (i = 0; i < local_n; i++) {
+				for (j = 0; j < n; j++)
+					printf("%f ", local_A[i*n+j]);
+				printf("%f\n", local_b[i]);
+			}			
+		}
 	}
 
 
