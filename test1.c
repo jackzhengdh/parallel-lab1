@@ -31,7 +31,10 @@ int main(int argc, char *argv[]) {
 
 	char *filename = argv[1];
 	FILE* fp;
-	fp = fopen(filename, "r");
+	if (my_rank == 0) {
+		printf("my_rank = 0, opening file\n");
+		fp = fopen(filename, "r");
+	}	
 
 	MPI_Init(NULL, NULL);
 	comm = MPI_COMM_WORLD;
@@ -48,6 +51,10 @@ int main(int argc, char *argv[]) {
 	free(local_x);
 
 	MPI_Finalize();
+	if (my_rank == 0) {
+		printf("my_rank = 0, closing file\n");
+		fp.close();
+	}
 	return 0;
 }
 
