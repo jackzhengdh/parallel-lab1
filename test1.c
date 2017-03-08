@@ -5,13 +5,13 @@
 
 void Check_for_error(int local_ok, char fname[], char message[], 
 	MPI_Comm comm);
-void read_input(FILE* fp, int* np, int* local_np, double* errp,
+void Read_input(FILE* fp, int* np, int* local_np, double* errp,
 	int my_rank, int comm_sz, MPI_Comm comm);
-void allocate_arrays(double** local_A_pp, double** local_b_pp, 
+void Allocate_arrays(double** local_A_pp, double** local_b_pp, 
 	double** local_x_pp, int n, int local_n, MPI_Comm comm);
-void read_matrix(FILE* fp, double local_A[], double local_b[],
+void Read_matrix(FILE* fp, double local_A[], double local_b[],
 	double local_x[], int n, int local_n, int my_rank, MPI_Comm comm);
-void print_matrix(double local_A[], double local_b[], 
+void Print_matrix(double local_A[], double local_b[], 
 	double local_x[], int n, int local_n, int my_rank, MPI_Comm comm);
 
 int main(int argc, char *argv[]) {
@@ -24,38 +24,32 @@ int main(int argc, char *argv[]) {
 	int my_rank, comm_sz;
 	MPI_Comm comm;
 
-	// if(argc != 2) {
-	// 	printf("Incorrect number of arguments\n");
-	// 	exit(1);
-	// }
+	if(argc != 2) {
+		printf("Incorrect number of arguments\n");
+		exit(1);
+	}
 
-	// char *filename = argv[1];
-	char *filename = "xxx";
+	char *filename = argv[1];
 	FILE* fp;
-	// if (my_rank == 0) {
-	// 	printf("my_rank = 0, opening file\n");
-	// 	fp = fopen(filename, "r");
-	// }	
+	if (my_rank == 0)
+		fp = fopen(filename, "r");
 
 	MPI_Init(NULL, NULL);
 	comm = MPI_COMM_WORLD;
 	MPI_Comm_size(comm, &comm_sz);
 	MPI_Comm_rank(comm, &my_rank);
 
-	read_input(fp, &n, &local_n, &err, my_rank, comm_sz, comm);
-	allocate_arrays(&local_A, &local_b, &local_x, n, local_n, comm);
-	read_matrix(fp, local_A, local_b, local_x, n, local_n, my_rank, comm);
-	print_matrix(local_A, local_b, local_x, n, local_n, my_rank, comm);
+	Read_input(fp, &n, &local_n, &err, my_rank, comm_sz, comm);
+	Allocate_arrays(&local_A, &local_b, &local_x, n, local_n, comm);
+	Read_matrix(fp, local_A, local_b, local_x, n, local_n, my_rank, comm);
+	Print_matrix(local_A, local_b, local_x, n, local_n, my_rank, comm);
 
 	free(local_A);
 	free(local_b);
 	free(local_x);
-
+	if (my_rank == 0)
+		fclose(fp);
 	MPI_Finalize();
-	// if (my_rank == 0) {
-	// 	printf("my_rank = 0, closing file\n");
-	// 	fclose(fp);
-	// }
 	return 0;
 }
 
@@ -81,7 +75,7 @@ void Check_for_error(
 	}
 }
 
-void read_input(
+void Read_input(
 	FILE* 		fp 			/* in */, 
 	int* 		np 			/* out */, 
 	int*		local_np 	/* out */,
@@ -108,12 +102,12 @@ void read_input(
 		MPI_Bcast(errp, 1, MPI_DOUBLE, 0, comm);
 
 	if (*np % comm_sz != 0) local_ok = 0;
-	Check_for_error(local_ok, "read_input", 
+	Check_for_error(local_ok, "Read_input", 
 		"n must be divisible by comm_sz", comm);
 	*local_np = *np / comm_sz;
 }
 
-void allocate_arrays(
+void Allocate_arrays(
 	double** 	local_A_pp 	/* out */, 
 	double** 	local_x_pp 	/* out */, 
 	double** 	local_b_pp 	/* out */, 
@@ -129,11 +123,11 @@ void allocate_arrays(
 
 	if (*local_A_pp == NULL || local_x_pp == NULL ||
 			local_b_pp == NULL) local_ok = 0;
-	Check_for_error(local_ok, "allocate_arrays",
+	Check_for_error(local_ok, "Allocate_arrays",
 			"Can't allocate local arrays", comm);
 }
 
-void read_matrix(
+void Read_matrix(
 	FILE* 		fp 				/* in */,
 	double 		local_A[] 		/* out */,
 	double 		local_b[] 		/* out */, 
@@ -153,7 +147,7 @@ void read_matrix(
 		A = malloc(local_n * n * sizeof(double));
 		b = malloc(local_n * sizeof(double));
 		if (A == NULL || b == NULL || x == NULL) local_ok = 0;
-		Check_for_error(local_ok, "read_matrix", 
+		Check_for_error(local_ok, "Read_matrix", 
 			"Cannot allocate temporary matrix", comm);
 
 		for (i = 0; i < n; i++)
@@ -173,7 +167,7 @@ void read_matrix(
 		free(A);
 		free(b);
 	} else {
-		Check_for_error(local_ok, "read_matrix", 
+		Check_for_error(local_ok, "Read_matrix", 
 			"Cannot allocate temporary matrix", comm);
 		MPI_Scatter(x, local_n, MPI_DOUBLE, 
 			local_x, local_n, MPI_DOUBLE, 0, comm);
@@ -184,7 +178,7 @@ void read_matrix(
 	}	
 }
 
-void print_matrix(
+void Print_matrix(
 	double 		local_A[] 		/* in */,
 	double 		local_b[] 		/* in */,
 	double 		local_x[] 		/* in */,
@@ -204,7 +198,7 @@ void print_matrix(
 		b = malloc(n * sizeof(double));
 		x = malloc(n * sizeof(double));
 		if (A == NULL || b == NULL || x == NULL) local_ok = 0;
-		Check_for_error(local_ok, "print_matrix", 
+		Check_for_error(local_ok, "Print_matrix", 
 			"Cannot allocate temporary matrix", comm);
 		MPI_Gather(local_A, local_n * n, MPI_DOUBLE,
 			A, local_n * n, MPI_DOUBLE, 0, comm);
@@ -225,7 +219,7 @@ void print_matrix(
 		free(A);
 		free(b);
 	} else {
-		Check_for_error(local_ok, "print_matrix", 
+		Check_for_error(local_ok, "Print_matrix", 
 			"Cannot allocate temporary matrix", comm);
 		MPI_Gather(local_A, local_n * n, MPI_DOUBLE,
 			A, local_n * n, MPI_DOUBLE, 0, comm);
