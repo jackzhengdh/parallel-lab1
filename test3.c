@@ -8,12 +8,16 @@
 void Read_top(FILE* fp, int* n_p, int* local_n_p, double* err_p,
 	int my_rank, int comm_sz, MPI_Comm comm);
 void Print_top(int n, double err, int my_rank, MPI_Comm comm);
-void Read_x(FILE* fp, double local_x[], int n, int local_n,
+void Allocate_arrays(double** local_A, double** local_b, double** local_x,
+	int n, int local_n, MPI_Comm comm);
+void Read_content(FILE* fp, double local_x[], int n, int local_n,
 	int my_rank, MPI_Comm comm);
-void Print_x(double local_x[], int n, int local_n,
+void Print_content(double local_x[], int n, int local_n,
 	int my_rank, MPI_Comm comm);
 
 int main(int argc, char* argv[]) {
+	double* local_A;
+	double* local_b;
 	double* local_x;
 	int n, local_n;
 	double err;
@@ -34,10 +38,10 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(comm, &my_rank);
 
 	Read_top(fp, &n, &local_n, &err, my_rank, comm_sz, comm);
-	local_x = malloc(local_n*sizeof(double));
-	Read_x(fp, local_x, n, local_n, my_rank, comm);
+	Allocate_arrays(local_A, local_b, local_x, n, local_n, comm);
+	Read_content(fp, local_x, n, local_n, my_rank, comm);
 	Print_top(n, err, my_rank, comm);
-	Print_x(local_x, n, local_n, my_rank, comm);
+	Print_content(local_x, n, local_n, my_rank, comm);
 	if (my_rank == 0)
 		fclose(fp);
 	MPI_Finalize();
@@ -61,7 +65,6 @@ void Read_top(
 	MPI_Bcast(n_p, 1, MPI_INT, 0, comm);
 	MPI_Bcast(err_p, 1, MPI_DOUBLE, 0, comm);
 	*local_n_p = *n_p/comm_sz;
-
 }
 
 void Print_top(
@@ -76,7 +79,19 @@ void Print_top(
 	}
 }
 
-void Read_x(
+void Allocate_arrays(
+	double** 	local_A_pp 	/* out */,
+	double** 	local_b_pp 	/* out */,
+	double** 	local_x_pp 	/* out */,
+	int 		n 			/* in  */,
+	int 		local_n		/* in  */,
+	MPI_Comm 	comm 		/* in  */) {
+
+	*local_A_pp = malloc(local_n*n*sizeof(double));
+	*local_b_pp = malloc(local_n*sizeof(double));
+	*local_x_pp = malloc(local_n*sizeof(double));
+}
+void Read_content(
 	FILE* 		fp 			/* in  */,
 	double 		local_x[] 	/* out */,
 	int 		n 			/* in  */,
@@ -101,7 +116,7 @@ void Read_x(
 	}
 }
 
-void Print_x(
+void Print_content(
 	double 		local_x[] 	/* in */,
 	int 		n 			/* in */,
 	int 		local_n 	/* in */, 

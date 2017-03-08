@@ -3,6 +3,9 @@
 #include <math.h>
 #include <mpi.h>
 
+// test2 and test3 are two tests working together
+// one is the backup of a guaranteed working version of the other
+
 void Get_dims(int* m_p, int* n_p, int my_rank, MPI_Comm comm);
 
 int main(void) {
