@@ -19,7 +19,8 @@ int main(void) {
 
 	MPI_Finalize();
 	return 0;
-}  /* main */
+}
+
 void read(
 		int*      n_p        /* out */,
 		int       my_rank    /* in  */,
@@ -30,5 +31,4 @@ void read(
 		scanf("%d", n_p);
 	}
 	MPI_Bcast(n_p, 1, MPI_INT, 0, comm);
-
-}  /* read */
+}
