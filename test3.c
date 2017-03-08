@@ -3,20 +3,20 @@
 #include <math.h>
 #include <mpi.h>
 
-void Read(FILE* fp, int* n_p, int my_rank, MPI_Comm comm);
+void Read(int* n_p, int my_rank, MPI_Comm comm);
 void Print(int n, int my_rank, MPI_Comm comm);
 
-int main(void) {
+int main(int argc, char* argv[]) {
 	int n, local_n;
 	int my_rank, comm_sz;
 	MPI_Comm comm;
 
-	char *filename = "xxx";
-	FILE* fp;
-	if (my_rank == 0) {
-		printf("my_rank = 0, opening file\n");
-		fp = fopen(filename, "r");
-	}	
+	// char *filename = argv[1];
+	// FILE* fp;
+	// if (my_rank == 0) {
+	// 	printf("my_rank = 0, opening file\n");
+	// 	fp = fopen(filename, "r");
+	// }
 
 	MPI_Init(NULL, NULL);
 	comm = MPI_COMM_WORLD;
@@ -38,7 +38,7 @@ void Read(
 
 	if (my_rank == 0) {
 		printf("Reading number...\n");
-		fscanf(fp, "%d", n_p);
+		scanf("%d", n_p);
 	}
 	MPI_Bcast(n_p, 1, MPI_INT, 0, comm);
 }
