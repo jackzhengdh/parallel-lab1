@@ -91,8 +91,8 @@ void Read_top(
 	MPI_Bcast(n_p, 1, MPI_INT, 0, comm);
 	MPI_Bcast(err_p, 1, MPI_DOUBLE, 0, comm);
 	if (*n_p % comm_sz != 0) local_ok = 0;
-	// Check_for_error(local_ok, "Read_top", 
-	// 	"number of equations must be divisible by comm_sz", comm);
+	Check_for_error(local_ok, "Read_top", 
+		"number of equations must be divisible by comm_sz", comm);
 	*local_n_p = *n_p/comm_sz;
 }
 
@@ -125,8 +125,8 @@ void Allocate_arrays(
 
 	if (*local_A_pp == NULL || *local_b_pp == NULL ||
 		*local_x_pp == NULL) local_ok = 0;
-	// Check_for_error(local_ok, "Allocate_arrays",
-	// 	"Cannot allocate local arrays", comm);
+	Check_for_error(local_ok, "Allocate_arrays",
+		"Cannot allocate local arrays", comm);
 }
 void Read_content(
 	FILE* 		fp 			/* in  */,
@@ -150,8 +150,8 @@ void Read_content(
 		b = malloc(n*sizeof(double));
 		x = malloc(n*sizeof(double));
 		if (A == NULL || b == NULL || x == NULL) local_ok = 0;
-		// Check_for_error(local_ok, "Read_content",
-		// 	"Cannot allocate temporary arrays", comm);
+		Check_for_error(local_ok, "Read_content",
+			"Cannot allocate temporary arrays", comm);
 		
 		for (i = 0; i < n; i++)
 			fscanf(fp, "%lf", &x[i]);
@@ -170,6 +170,8 @@ void Read_content(
 		free(b);
 		free(x);
 	} else {
+		Check_for_error(local_ok, "Read_content",
+			"Cannot allocate temporary arrays", comm);		
 		MPI_Scatter(A, n*local_n, MPI_DOUBLE, 
 			local_A, n*local_n, MPI_DOUBLE, 0, comm);
 		MPI_Scatter(b, local_n, MPI_DOUBLE, 
@@ -201,8 +203,8 @@ void Print_content(
 		b = malloc(n*sizeof(double));
 		x = malloc(n*sizeof(double));
 		if (A == NULL || b == NULL || x == NULL) local_ok = 0;
-		// Check_for_error(local_ok, "Print_content",
-			// "Cannot allocate temporary arrays", comm);		
+		Check_for_error(local_ok, "Print_content",
+			"Cannot allocate temporary arrays", comm);		
 		MPI_Gather(local_A, n*local_n, MPI_DOUBLE,
 			A, n*local_n, MPI_DOUBLE, 0, comm);
 		MPI_Gather(local_b, local_n, MPI_DOUBLE,
@@ -223,6 +225,8 @@ void Print_content(
 		free(b);
 		free(x);
 	} else {
+		Check_for_error(local_ok, "Print_content",
+			"Cannot allocate temporary arrays", comm);		
 		MPI_Gather(local_A, n*local_n, MPI_DOUBLE,
 			A, n*local_n, MPI_DOUBLE, 0, comm);
 		MPI_Gather(local_b, local_n, MPI_DOUBLE,
