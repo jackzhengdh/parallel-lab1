@@ -72,9 +72,9 @@ void read(
 	MPI_Comm 	comm 		/* in */) {
 
 	if (my_rank == 0) {
-		fscanf(fp, "%lf", np);
+		fscanf(fp, "%d", np);
 	}
-	MPI_Bcast(np, 1, MPI_DOUBLE, 0, comm);
+	MPI_Bcast(np, 1, MPI_INT, 0, comm);
 }
 
 
@@ -84,7 +84,7 @@ void print(
 	MPI_Comm 	comm 		/* in */) {
 
 	if (my_rank == 0) {
-		printf("printing num: %d\n", n)
+		printf("printing num: %d\n", n);
 	}
 }
 
