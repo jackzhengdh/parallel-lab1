@@ -19,7 +19,7 @@ void read(int* np, int my_rank, int comm_sz, MPI_Comm comm);
 
 int main(int argc, char *argv[]) {
 	
-	int n, local_n;
+	int m, local_m, n, local_n;
 	int my_rank, comm_sz;
 	MPI_Comm comm;
 
@@ -28,31 +28,10 @@ int main(int argc, char *argv[]) {
 	MPI_Comm_size(comm, &comm_sz);
 	MPI_Comm_rank(comm, &my_rank);
 
-
-	// if(argc != 2) {
-	// 	printf("Incorrect number of arguments\n");
-	// 	exit(1);
-	// }
-
-	// char *filename = argv[1];
-
-	// FILE* fp;
-	// if (my_rank == 0) {
-	// 	printf("my_rank = 0, opening file\n");
-	// 	fp = fopen(filename, "r");
-	// }
-
-	comm_sz = 1;
-	// read(fp, &n, my_rank, comm_sz, comm);
+	// Get_dims(&m, &local_m, &n, &local_n, my_rank, comm_sz, comm);
 	read(&n, my_rank, comm_sz, comm);
-	// print(n, my_rank, comm);
 
-	// if (my_rank == 0) {
-	// 	printf("my_rank = 0, closing file\n");
-	// 	fclose(fp);
-	// }
 	MPI_Finalize();
-
 	return 0;
 }
 
