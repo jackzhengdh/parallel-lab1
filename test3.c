@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 	local_x = malloc(local_n*sizeof(double));
 	Read_x(fp, local_x, n, local_n, my_rank, comm);
 	Print_top(n, err, my_rank, comm);
-	// Print_x(local_x, n, local_n, my_rank, comm);
+	Print_x(local_x, n, local_n, my_rank, comm);
 	if (my_rank == 0)
 		fclose(fp);
 	MPI_Finalize();
