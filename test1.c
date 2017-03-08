@@ -90,9 +90,9 @@ void Read_input(
 
 	if (my_rank == 0) {
 		printf("Reading number of x\n");
-		fscanf("%d", np);
+		fscanf(fp, "%d", np);
 		printf("Reading value of err\n");
-		fscanf("%lf", errp);
+		fscanf(fp, "%lf", errp);
 	}
 
 
