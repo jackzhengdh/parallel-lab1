@@ -30,7 +30,6 @@ int main(int argc, char* argv[]) {
 
 	FILE* fp;
 	if (my_rank == 0) {
-		// printf("my_rank = 0, opening file\n");
 		fp = fopen(filename, "r");
 	}
 
@@ -86,7 +85,7 @@ void Read_top(
 		printf("Reading numbers...\n");
 		fscanf(fp, "%d", n_p);
 		fscanf(fp, "%lf", err_p);
-		printf("Reading numbers complete!\n");
+
 	}
 	MPI_Bcast(n_p, 1, MPI_INT, 0, comm);
 	MPI_Bcast(err_p, 1, MPI_DOUBLE, 0, comm);
