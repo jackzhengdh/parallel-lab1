@@ -8,6 +8,8 @@ void Read_top(FILE* fp, int* n_p, int* local_n_p, double* err_p,
 void Print_top(int n, double err, int my_rank, MPI_Comm comm);
 void Read_x(FILE* fp, double local_x[], int n, int local_n,
 	int my_rank, MPI_Comm comm);
+void Print_x(double local_x[], int n, int local_n,
+	int my_rank, MPI_Comm comm);
 
 int main(int argc, char* argv[]) {
 	double* local_x;
@@ -33,6 +35,7 @@ int main(int argc, char* argv[]) {
 	local_x = malloc(local_n*sizeof(double));
 	Read_x(fp, local_x, n, local_n, my_rank, comm);
 	Print_top(n, err, my_rank, comm);
+	// Print_x(local_x, n, local_n, my_rank, comm);
 
 	MPI_Finalize();
 	return 0;
@@ -87,14 +90,38 @@ void Read_x(
 		for (i = 0; i < n; i++)
 			fscanf(fp, "%lf", &x[i]);
 		MPI_Scatter(x, local_n, MPI_DOUBLE, 
-				local_x, local_n, MPI_DOUBLE, 0, comm);
+			local_x, local_n, MPI_DOUBLE, 0, comm);
 		free(x);
 	} else {
 		MPI_Scatter(x, local_n, MPI_DOUBLE, 
-				local_x, local_n, MPI_DOUBLE, 0, comm);
+			local_x, local_n, MPI_DOUBLE, 0, comm);
 	}
 }
 
+void Print_x(
+	double 		local_x[] 	/* in */,
+	int 		n 			/* in */,
+	int 		local_n 	/* in */, 
+	int 		my_rank 	/* in */,
+	MPI_Comm 	comm 		/* in */) {
+
+	double* x = NULL;
+	int i;
+
+	if (my_rank == 0) {
+		x = malloc(n*sizeof(double));
+		MPI_Gather(local_x, local_n, MPI_DOUBLE,
+			x, local_n, MPI_DOUBLE, 0, comm);
+		printf("\nPrinting values of x\n");
+		for (i = 0; i < n; i++)
+			printf("%f ", x[i]);
+		printf("\n");
+		free(x);
+	} else {
+		MPI_Gather(local_x, local_n, MPI_DOUBLE,
+			x, local_n, MPI_DOUBLE, 0, comm);
+	}
+}
 
 
 
