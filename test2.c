@@ -27,6 +27,12 @@ int main(int argc, char *argv[]) {
 	int my_rank, comm_sz;
 	MPI_Comm comm;
 
+	MPI_Init(NULL, NULL);
+	comm = MPI_COMM_WORLD;
+	MPI_Comm_size(comm, &comm_sz);
+	MPI_Comm_rank(comm, &my_rank);
+
+
 	if(argc != 2) {
 		printf("Incorrect number of arguments\n");
 		exit(1);
@@ -40,10 +46,7 @@ int main(int argc, char *argv[]) {
 		fp = fopen(filename, "r");
 	}
 
-	MPI_Init(NULL, NULL);
-	comm = MPI_COMM_WORLD;
-	MPI_Comm_size(comm, &comm_sz);
-	MPI_Comm_rank(comm, &my_rank);
+
 
 	read(fp, &n, my_rank, comm_sz, comm);
 
@@ -56,11 +59,12 @@ int main(int argc, char *argv[]) {
 	// free(local_b);
 	// free(local_x);
 
-	MPI_Finalize();
 	if (my_rank == 0) {
 		printf("my_rank = 0, closing file\n");
 		fclose(fp);
 	}
+	MPI_Finalize();
+
 	return 0;
 }
 
