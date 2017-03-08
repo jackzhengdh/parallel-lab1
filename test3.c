@@ -84,13 +84,13 @@ void Read_x(
 		x = malloc(n*sizeof(double));
 		printf("Logging in values of x\n");
 		for (i = 0; i < n; i++)
-			fscanf(fp, "%lf", &A[i]);
+			fscanf(fp, "%lf", &x[i]);
 		MPI_Scatter(x, local_n, MPI_DOUBLE, 
-				local_A, local_n, MPI_DOUBLE, 0, comm);
+				local_x, local_n, MPI_DOUBLE, 0, comm);
 		free(A);
 	} else {
 		MPI_Scatter(x, local_n, MPI_DOUBLE, 
-				local_A, local_n, MPI_DOUBLE, 0, comm);
+				local_x, local_n, MPI_DOUBLE, 0, comm);
 	}
 }
 
