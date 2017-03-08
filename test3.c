@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_size(comm, &comm_sz);
 	MPI_Comm_rank(comm, &my_rank);
 
-	Read(fp, &n, my_rank, comm);
+	Read(&n, my_rank, comm);
 	Print(n, my_rank, comm);
 
 	MPI_Finalize();
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 }
 
 void Read(
-	FILE* 		fp 			/* in */,
+	// FILE* 		fp 			/* in */,
 	int* 		n_p 		/* out */,
 	int 		my_rank 	/* in  */,
 	MPI_Comm 	comm 		/* in  */) {
