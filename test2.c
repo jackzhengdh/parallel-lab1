@@ -74,11 +74,19 @@ void read(
 	if (my_rank == 0) {
 		fscanf(fp, "%lf", np);
 	}
-	BPI_Bcast(np, 1, MPI_DOUBLE, 0, comm);
+	MPI_Bcast(np, 1, MPI_DOUBLE, 0, comm);
 }
 
 
+void print(
+	int 		n 			/* in */,
+	int 		my_rank 	/* in */, 
+	MPI_Comm 	comm 		/* in */) {
 
+	if (my_rank == 0) {
+		printf("printing num: %d\n", n)
+	}
+}
 
 
 
