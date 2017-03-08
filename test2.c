@@ -3,7 +3,8 @@
 #include <math.h>
 #include <mpi.h>
 
-void read(FILE* fp, int* np, int my_rank, int comm_sz, MPI_Comm comm);
+// void read(FILE* fp, int* np, int my_rank, int comm_sz, MPI_Comm comm);
+void read(int* np, int my_rank, int comm_sz, MPI_Comm comm);
 void print(int n, int my_rank, MPI_Comm comm);
 
 
@@ -33,16 +34,17 @@ int main(int argc, char *argv[]) {
 	// 	exit(1);
 	// }
 
-	char *filename = argv[1];
+	// char *filename = argv[1];
 
-	FILE* fp;
-	if (my_rank == 0) {
-		printf("my_rank = 0, opening file\n");
-		fp = fopen(filename, "r");
-	}
+	// FILE* fp;
+	// if (my_rank == 0) {
+	// 	printf("my_rank = 0, opening file\n");
+	// 	fp = fopen(filename, "r");
+	// }
 
 	comm_sz = 1;
-	read(fp, &n, my_rank, comm_sz, comm);
+	// read(fp, &n, my_rank, comm_sz, comm);
+	read(&n, my_rank, comm_sz, comm);
 	print(n, my_rank, comm);
 
 	if (my_rank == 0) {
@@ -55,14 +57,15 @@ int main(int argc, char *argv[]) {
 }
 
 void read(
-	FILE* 		fp 			/* in */, 
+	// FILE* 		fp 			/* in */, 
 	int* 		np 			/* out */,
 	int  		my_rank 	/* in */, 
 	int 		comm_sz 	/* in */,
 	MPI_Comm 	comm 		/* in */) {
 
 	if (my_rank == 0) {
-		fscanf(fp, "%d", np);
+		printf("Enter num: \n", );
+		sanf("%d", np);
 		MPI_Bcast(np, 1, MPI_INT, 0, comm);
 	}
 }
