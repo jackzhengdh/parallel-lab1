@@ -18,10 +18,6 @@ void print(int n, int my_rank, MPI_Comm comm);
 
 int main(int argc, char *argv[]) {
 	
-	// double* local_A;
-	// double* local_b;
-	// double* local_x;
-	// double err;
 	int n, local_n;
 	int my_rank, comm_sz;
 	MPI_Comm comm;
@@ -32,10 +28,10 @@ int main(int argc, char *argv[]) {
 	MPI_Comm_rank(comm, &my_rank);
 
 
-	if(argc != 2) {
-		printf("Incorrect number of arguments\n");
-		exit(1);
-	}
+	// if(argc != 2) {
+	// 	printf("Incorrect number of arguments\n");
+	// 	exit(1);
+	// }
 
 	char *filename = argv[1];
 
@@ -47,15 +43,7 @@ int main(int argc, char *argv[]) {
 
 	comm_sz = 1;
 	read(fp, &n, my_rank, comm_sz, comm);
-
-	// read_input(fp, &n, &local_n, &err, my_rank, comm_sz, comm);
-	// allocate_arrays(&local_A, &local_b, &local_x, n, local_n, comm);
-	// read_matrix(fp, local_A, local_b, local_x, n, local_n, my_rank, comm);
-	// print_matrix(local_A, local_b, local_x, n, local_n, my_rank, comm);
-
-	// free(local_A);
-	// free(local_b);
-	// free(local_x);
+	print(n, my_rank, comm);
 
 	if (my_rank == 0) {
 		printf("my_rank = 0, closing file\n");
