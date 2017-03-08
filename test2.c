@@ -47,10 +47,10 @@ int main(int argc, char *argv[]) {
 	read(&n, my_rank, comm_sz, comm);
 	print(n, my_rank, comm);
 
-	if (my_rank == 0) {
-		printf("my_rank = 0, closing file\n");
-		fclose(fp);
-	}
+	// if (my_rank == 0) {
+	// 	printf("my_rank = 0, closing file\n");
+	// 	fclose(fp);
+	// }
 	MPI_Finalize();
 
 	return 0;
@@ -64,7 +64,7 @@ void read(
 	MPI_Comm 	comm 		/* in */) {
 
 	if (my_rank == 0) {
-		printf("Enter num: \n", );
+		printf("Enter num: \n");
 		sanf("%d", np);
 		MPI_Bcast(np, 1, MPI_INT, 0, comm);
 	}
