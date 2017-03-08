@@ -109,7 +109,6 @@ void Print_top(
 }
 
 void Allocate_arrays(
-	printf("Allocating arrays...\n");
 	double** 	local_A_pp 	/* out */,
 	double** 	local_b_pp 	/* out */,
 	double** 	local_x_pp 	/* out */,
@@ -117,6 +116,7 @@ void Allocate_arrays(
 	int 		local_n		/* in  */,
 	MPI_Comm 	comm 		/* in  */) {
 
+	printf("Allocating arrays...\n");
 	int local_ok = 1;
 
 	*local_A_pp = malloc(local_n*n*sizeof(double));
@@ -129,7 +129,6 @@ void Allocate_arrays(
 	// 	"Cannot allocate local arrays", comm);
 }
 void Read_content(
-	printf("Reading content...\n");
 	FILE* 		fp 			/* in  */,
 	double 		local_A[] 	/* out */,
 	double 		local_b[] 	/* out */,
@@ -139,6 +138,7 @@ void Read_content(
 	int 		my_rank 	/* in  */,
 	MPI_Comm 	comm 		/* in  */) {
 
+	printf("Reading content...\n");
 	double* A = NULL;
 	double* b = NULL;
 	double* x = NULL;
@@ -180,7 +180,6 @@ void Read_content(
 }
 
 void Print_content(
-	printf("Printing content...\n");
 	double 		local_A[] 	/* in */,
 	double 		local_b[] 	/* in */,
 	double 		local_x[] 	/* in */,	
@@ -188,6 +187,8 @@ void Print_content(
 	int 		local_n 	/* in */, 
 	int 		my_rank 	/* in */,
 	MPI_Comm 	comm 		/* in */) {
+
+	printf("Printing content...\n");
 
 	double* A = NULL;
 	double* b = NULL;
