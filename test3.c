@@ -87,7 +87,7 @@ void Read_x(
 			fscanf(fp, "%lf", &x[i]);
 		MPI_Scatter(x, local_n, MPI_DOUBLE, 
 				local_x, local_n, MPI_DOUBLE, 0, comm);
-		free(A);
+		free(x);
 	} else {
 		MPI_Scatter(x, local_n, MPI_DOUBLE, 
 				local_x, local_n, MPI_DOUBLE, 0, comm);
