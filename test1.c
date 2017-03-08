@@ -24,17 +24,18 @@ int main(int argc, char *argv[]) {
 	int my_rank, comm_sz;
 	MPI_Comm comm;
 
-	if(argc != 2) {
-		printf("Incorrect number of arguments\n");
-		exit(1);
-	}
+	// if(argc != 2) {
+	// 	printf("Incorrect number of arguments\n");
+	// 	exit(1);
+	// }
 
-	char *filename = argv[1];
+	// char *filename = argv[1];
+	char *filename = "xxx";
 	FILE* fp;
-	if (my_rank == 0) {
-		printf("my_rank = 0, opening file\n");
-		fp = fopen(filename, "r");
-	}	
+	// if (my_rank == 0) {
+	// 	printf("my_rank = 0, opening file\n");
+	// 	fp = fopen(filename, "r");
+	// }	
 
 	MPI_Init(NULL, NULL);
 	comm = MPI_COMM_WORLD;
@@ -51,10 +52,10 @@ int main(int argc, char *argv[]) {
 	free(local_x);
 
 	MPI_Finalize();
-	if (my_rank == 0) {
-		printf("my_rank = 0, closing file\n");
-		fclose(fp);
-	}
+	// if (my_rank == 0) {
+	// 	printf("my_rank = 0, closing file\n");
+	// 	fclose(fp);
+	// }
 	return 0;
 }
 
@@ -92,9 +93,17 @@ void read_input(
 	int local_ok = 1;
 
 	if (my_rank == 0) {
-		fscanf(fp, "%d ", np);
-		fscanf(fp, "%lf ", errp);
+		printf("Enter num\n");
+		scanf("%d", np);
+		printf("Enter err\n");
+		scanf("%d", errp);
 	}
+
+
+	// if (my_rank == 0) {
+	// 	fscanf(fp, "%d ", np);
+	// 	fscanf(fp, "%lf ", errp);
+	// }
 		MPI_Bcast(np, 1, MPI_INT, 0, comm);
 		MPI_Bcast(errp, 1, MPI_DOUBLE, 0, comm);
 
