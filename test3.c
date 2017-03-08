@@ -10,6 +10,13 @@ int main(void) {
 	int my_rank, comm_sz;
 	MPI_Comm comm;
 
+	// char *filename = "xxx";
+	// FILE* fp;
+	// if (my_rank == 0) {
+	// 	printf("my_rank = 0, opening file\n");
+	// 	fp = fopen(filename, "r");
+	// }	
+
 	MPI_Init(NULL, NULL);
 	comm = MPI_COMM_WORLD;
 	MPI_Comm_size(comm, &comm_sz);
@@ -22,9 +29,9 @@ int main(void) {
 }
 
 void Read(
-		int*      n_p        /* out */,
-		int       my_rank    /* in  */,
-		MPI_Comm  comm       /* in  */) {
+	int* 		n_p 		/* out */,
+	int 		my_rank 	/* in  */,
+	MPI_Comm 	comm 		/* in  */) {
 
 	if (my_rank == 0) {
 		printf("Enter a number\n");
@@ -32,3 +39,22 @@ void Read(
 	}
 	MPI_Bcast(n_p, 1, MPI_INT, 0, comm);
 }
+
+void Print(
+	int 		n 			/* in */,
+	int 		my_rank 	/* in */,
+	MPI_Comm 	comm 		/* in */) {
+
+	if (my_rank == 0) {
+		printf("The number entered was%d\n", n);
+	}
+}
+
+
+
+
+
+
+
+
+
