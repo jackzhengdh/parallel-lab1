@@ -58,7 +58,7 @@ void Check_for_error(
 
 	int ok;
 
-	MPI_Allreduce(&local_ok, &ok, 1, MPI_INT, MPI_INT, comm);
+	MPI_Allreduce(&local_ok, &ok, 1, MPI_INT, MPI_MIN, comm);
 	if (ok == 0) {
 		int my_rank;
 		MPI_Comm_rank(comm, &my_rank);
@@ -115,13 +115,14 @@ void Allocate_arrays(
 	int 		local_n		/* in  */,
 	MPI_Comm 	comm 		/* in  */) {
 
+	int local_ok = 1;
+
 	*local_A_pp = malloc(local_n*n*sizeof(double));
 	*local_b_pp = malloc(local_n*sizeof(double));
 	*local_x_pp = malloc(local_n*sizeof(double));
 
 	if (*local_A_pp == NULL || *local_b_pp == NULL ||
-		*local_x_pp == NULL)
-		local_ok = 0;
+		*local_x_pp == NULL) local_ok = 0;
 	Check_for_error(local_ok, "Allocate_arrays",
 		"Cannot allocate local arrays", comm);
 }
