@@ -3,6 +3,8 @@
 #include <math.h>
 #include <mpi.h>
 
+// does not work yet
+
 void Check_for_error(int local_ok, char fname[], char message[], 
 	MPI_Comm comm);
 void Read_input(FILE* fp, int* np, int* local_np, double* errp,
@@ -87,10 +89,10 @@ void Read_input(
 	int local_ok = 1;
 
 	if (my_rank == 0) {
-		printf("Enter num\n");
-		scanf("%d", np);
-		printf("Enter err\n");
-		scanf("%d", errp);
+		printf("Reading number of x\n");
+		fscanf("%d", np);
+		printf("Reading value of err\n");
+		fscanf("%lf", errp);
 	}
 
 
@@ -146,6 +148,7 @@ void Read_matrix(
 	if (my_rank == 0) {
 		A = malloc(local_n * n * sizeof(double));
 		b = malloc(local_n * sizeof(double));
+		x = malloc(n * sizeof(double));		
 		if (A == NULL || b == NULL || x == NULL) local_ok = 0;
 		Check_for_error(local_ok, "Read_matrix", 
 			"Cannot allocate temporary matrix", comm);

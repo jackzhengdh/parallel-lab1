@@ -3,6 +3,8 @@
 #include <math.h>
 #include <mpi.h>
 
+// this version works - read input and print output
+
 void Read_top(FILE* fp, int* n_p, int* local_n_p, double* err_p,
 	int my_rank, int comm_sz, MPI_Comm comm);
 void Print_top(int n, double err, int my_rank, MPI_Comm comm);
