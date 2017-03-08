@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(comm, &my_rank);
 
 	Read_top(fp, &n, &local_n, &err, my_rank, comm_sz, comm);
+	local_x = malloc(local_n*sizeof(double));
 	Read_x(fp, local_x, n, local_n, my_rank, comm);
 	Print_top(n, err, my_rank, comm);
 
