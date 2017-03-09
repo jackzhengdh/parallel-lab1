@@ -346,7 +346,10 @@ void Update_x(
 		int cnt = 0;
 		for (i = 0; i < n; i++)
 			cnt += test[i];
+		if (cnt == 0)
+			printf("***** cnt == 0 \n");
 		if (cnt == 0 && my_rank == 0) {
+			printf("Enteres cnt = 0, my_rank = 0\n", );
 			if (phase % 2 == 0) {
 				MPI_Allgather(local_x, local_n, MPI_DOUBLE,
 					x, local_n, MPI_DOUBLE, comm);
