@@ -349,7 +349,6 @@ void Update_x(
 			cnt += test[i];
 
 		if (cnt == 0) {
-			printf("cnt is now 0\n");
 			if (phase % 2 == 0) {
 				MPI_Allgather(local_x, local_n, MPI_DOUBLE,
 					x, local_n, MPI_DOUBLE, comm);
@@ -364,8 +363,6 @@ void Update_x(
 			}
 			break;	
 		}
-		// if (cnt == 0)
-		// 	break;
 	}
 }
 
