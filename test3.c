@@ -274,12 +274,12 @@ void Update_x(
 			MPI_Allgather(local_x, local_n, MPI_DOUBLE, 
 				x, local_n, MPI_DOUBLE, comm);
 
-			if (my_rank == 0) {
-				printf("At phase = %d proc = %d, we have x containing:\n", phase, my_rank);
-				for (i = 0; i < n; i++)
-					printf("%f\n", x[i]);
-				printf("\n");
-			}	
+			// if (my_rank == 0) {
+			// 	printf("At phase = %d proc = %d, we have x containing:\n", phase, my_rank);
+			// 	for (i = 0; i < n; i++)
+			// 		printf("%f\n", x[i]);
+			// 	printf("\n");
+			// }	
 
 			for (i = 0; i < local_n; i++) {
 				local_y[i] = 0;
@@ -298,22 +298,22 @@ void Update_x(
 
 				// printf("--after: At phase %d proc %d, pos is %d, local_xy[%d] is %f\n", phase, my_rank, pos, i, local_y[i]);
 			} // values updated
-			printf("At phase = %d proc = %d, we have test containing:\n", phase, my_rank);
-			for (i = 0; i < local_n; i++)
-				printf("%d\n", local_test[i]);
-			printf("\n");
+			// printf("At phase = %d proc = %d, we have test containing:\n", phase, my_rank);
+			// for (i = 0; i < local_n; i++)
+			// 	printf("%d\n", local_test[i]);
+			// printf("\n");
 			MPI_Barrier(comm); // wait for all processes to complete update
 		}
 		else {
 			MPI_Allgather(local_y, local_n, MPI_DOUBLE, 
 				x, local_n, MPI_DOUBLE, comm);
 
-			if (my_rank == 0) {
-				printf("At phase = %d proc = %d, we have x containing:\n", phase, my_rank);
-				for (i = 0; i < n; i++)
-					printf("%f\n", x[i]);
-				printf("\n");
-			}
+			// if (my_rank == 0) {
+			// 	printf("At phase = %d proc = %d, we have x containing:\n", phase, my_rank);
+			// 	for (i = 0; i < n; i++)
+			// 		printf("%f\n", x[i]);
+			// 	printf("\n");
+			// }
 
 			for (i = 0; i < local_n; i++) {
 				local_x[i] = 0;
@@ -332,36 +332,35 @@ void Update_x(
 
 				// printf("--after: At phase %d proc %d, local_xy[%d] is %f\n", phase, my_rank, i, local_y[i]);
 			} // values updated
-			printf("At phase = %d proc = %d, we have test containing:\n", phase, my_rank);
-			for (i = 0; i < local_n; i++)
-				printf("%d\n", local_test[i]);
-			printf("\n");
+			// printf("At phase = %d proc = %d, we have test containing:\n", phase, my_rank);
+			// for (i = 0; i < local_n; i++)
+			// 	printf("%d\n", local_test[i]);
+			// printf("\n");
 			MPI_Barrier(comm); // wait for all processes to complete update
 		}
-		// if (my_rank == 0) {
-			printf("Entered testing end condition stage..\n");
-			MPI_Allgather(local_test, local_n, MPI_INT,
-				test, local_n, MPI_INT, 0, comm);
-			int cnt = 0;
-			for (i = 0; i < n; i++)
-				cnt += test[i];
-			printf("Finished incrementing cnt\n");
-			// if (cnt == 0) {
-			// 	printf("Enters if cnt == 0 stage..\n");
-			// 	if (phase % 2 == 0) {
-			// 		MPI_Gather(local_y, local_n, MPI_DOUBLE,
-			// 			x, local_n, MPI_DOUBLE, 0, comm);
-			// 	} else {
-			// 		MPI_Gather(local_x, local_n, MPI_DOUBLE,
-			// 			x, local_n, MPI_DOUBLE, 0, comm);
-			// 	}
-			// 	for (j = 0; j < n; j++)
-			// 		printf("%f\n", x[j]);
-			// 	printf("%d\n", phase);
-			// 	phase = -2;
-			// 	MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
-			// }
-		// }
+
+		// printf("Entered testing end condition stage..\n");
+		MPI_Allgather(local_test, local_n, MPI_INT,
+			test, local_n, MPI_INT, comm);
+		int cnt = 0;
+		for (i = 0; i < n; i++)
+			cnt += test[i];
+		// printf("Finished incrementing cnt\n");
+		if (cnt == 0) {
+			printf("Enters if cnt == 0 stage..\n");
+			if (phase % 2 == 0) {
+				MPI_Gather(local_y, local_n, MPI_DOUBLE,
+					x, local_n, MPI_DOUBLE, 0, comm);
+			} else {
+				MPI_Gather(local_x, local_n, MPI_DOUBLE,
+					x, local_n, MPI_DOUBLE, 0, comm);
+			}
+			for (j = 0; j < n; j++)
+				printf("%f\n", x[j]);
+			printf("%d\n", phase);
+			phase = -2;
+			MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
+		}
 		phase++;
 	}
 }
