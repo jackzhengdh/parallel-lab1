@@ -256,6 +256,7 @@ void Update_x(
 	MPI_Comm 	comm 		/* in  */) {
 
 	int phase = 0;
+	int contd = 0;
 	int i, j;
 
 	double* x = NULL;
@@ -266,6 +267,9 @@ void Update_x(
 	local_test = malloc(n*sizeof(int));
 
 	while (1) {
+		MPI_Bcast(&contd, 1, MPI_INT, 0, comm);
+		if (contd != 0)
+			break;
 		if (phase > 10 || phase < 0) {
 			printf("Process %d breaking at phase = 5\n", my_rank);
 			break;
@@ -360,7 +364,7 @@ void Update_x(
 			for (j = 0; j < n; j++)
 				printf("%f\n", x[j]);
 			printf("total number of iterations: %d\n", phase);
-			phase = -10;
+			contd = 1;
 		}
 	}
 }
