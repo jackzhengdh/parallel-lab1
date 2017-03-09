@@ -267,10 +267,6 @@ void Update_x(
 	local_test = malloc(n*sizeof(int));
 
 	while (1) {
-		if (phase > 10 || phase < 0) {
-			printf("Process %d breaking at phase = 5\n", my_rank);
-			break;
-		}	
 		if (phase % 2 == 0) {
 			phase++;
 			MPI_Allgather(local_x, local_n, MPI_DOUBLE, 
