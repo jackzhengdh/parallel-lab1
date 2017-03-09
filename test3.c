@@ -17,7 +17,8 @@ void Read_content(FILE* fp, double local_A[], double local_b[],
 void Print_content(double local_A[], double local_b[], double local_x[],
 	int n, int local_n, int my_rank, MPI_Comm comm);
 void Update_x(double local_x[], double local_y[], double local_A[], 
-	double local_b[], int n, int local_n, int my_rank, MPI_Comm comm);
+	double local_b[], int n, int local_n, int my_rank, int comm_sz, 
+	MPI_Comm comm);
 
 int main(int argc, char* argv[]) {
 	double* local_A;
@@ -46,7 +47,8 @@ int main(int argc, char* argv[]) {
 	Read_content(fp, local_A, local_b, local_x, n, local_n, my_rank, comm);
 	// Print_top(n, err, my_rank, comm);
 	// Print_content(local_A, local_b, local_x, n, local_n, my_rank, comm);
-	Update_x(local_x, local_y, double_A, double_b, n, local_n, my_rank, comm);
+	Update_x(local_x, local_y, local_A, local_b, n, local_n,
+		my_rank, comm_sz, comm);
 	if (my_rank == 0)
 		fclose(fp);
 	MPI_Finalize();
@@ -249,6 +251,7 @@ void Update_x(
 	int 		n 			/* in  */,
 	int 		local_n 	/* in  */, 
 	int 		my_rank 	/* in  */,
+	int 		comm_sz 	/* in  */,
 	MPI_Comm 	comm 		/* in  */) {
 
 	int phase = 0;
