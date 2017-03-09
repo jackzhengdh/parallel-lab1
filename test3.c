@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 	Allocate_arrays(&local_A, &local_b, &local_x, &local_y, n, local_n, comm);
 	Read_content(fp, local_A, local_b, local_x, n, local_n, my_rank, comm);
 	// Print_top(n, err, my_rank, comm);
-	// Print_content(local_A, local_b, local_x, n, local_n, my_rank, comm);
+	Print_content(local_A, local_b, local_x, n, local_n, my_rank, comm);
 	Update_x(local_x, local_y, local_A, local_b, n, local_n,
 		my_rank, comm_sz, comm);
 	if (my_rank == 0)
@@ -283,7 +283,7 @@ void Update_x(
 
 			for (i = 0; i < local_n; i++) {
 				local_y[i] = 0;
-				int tsum = 0;
+				double tsum = 0;
 				int pos = my_rank*comm_sz+i;
 				for (j = 0; j < n; j++) {
 					if (pos != j) // y[i] is not x[j]
@@ -309,7 +309,7 @@ void Update_x(
 
 			for (i = 0; i < local_n; i++) {
 				local_x[i] = 0;
-				int tsum = 0;
+				double tsum = 0;
 				int pos = my_rank*comm_sz+i;
 				for (j = 0; j < n; j++) {
 					if (pos != j) // y[i] is not x[j]
