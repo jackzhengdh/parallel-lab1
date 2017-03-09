@@ -3,7 +3,7 @@
 #include <math.h>
 #include <mpi.h>
 
-// this version works - read input and print output
+//
 
 void Check_for_error(int local_ok, char fname[], char message[],
 	MPI_Comm comm);
@@ -16,8 +16,8 @@ void Read_content(FILE* fp, double local_A[], double local_b[],
 	double local_x[], int n, int local_n, int my_rank, MPI_Comm comm);
 void Print_content(double local_A[], double local_b[], double local_x[],
 	int n, int local_n, int my_rank, MPI_Comm comm);
-void Update_x(double local_x[], double local_y[], int n, int local_n,
-	int my_rank, MPI_Comm comm);
+void Update_x(double local_x[], double local_y[], double local_A[], 
+	double local_b[], int n, int local_n, int my_rank, MPI_Comm comm);
 
 int main(int argc, char* argv[]) {
 	double* local_A;
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 	Read_content(fp, local_A, local_b, local_x, n, local_n, my_rank, comm);
 	// Print_top(n, err, my_rank, comm);
 	// Print_content(local_A, local_b, local_x, n, local_n, my_rank, comm);
-	Update_x(local_x, local_y, n, local_n, my_rank, comm);
+	Update_x(local_x, local_y, double_A, double_b, n, local_n, my_rank, comm);
 	if (my_rank == 0)
 		fclose(fp);
 	MPI_Finalize();
@@ -243,7 +243,9 @@ void Print_content(
 
 void Update_x(
 	double 		local_x[] 	/* in  */,
-	double 		local_y[] 	/* out */,	
+	double 		local_y[] 	/* out */,
+	double 		local_A[] 	/* in  */,
+	double 		local_b[] 	/* in  */,
 	int 		n 			/* in  */,
 	int 		local_n 	/* in  */, 
 	int 		my_rank 	/* in  */,
@@ -252,9 +254,13 @@ void Update_x(
 	int phase = 0;
 	int i, j;
 
+	double* A = NULL;
+	double* b = NULL;
 	double* x = NULL;
-	x = malloc(n*sizeof(double));
 
+	A = malloc(n*n*sizeof(double));
+	b = malloc(n*sizeof(double));
+	x = malloc(n*sizeof(double));
 
 	while (1) {
 		if (phase == 5)  {
@@ -265,20 +271,23 @@ void Update_x(
 			MPI_Allgather(local_x, local_n, MPI_DOUBLE, 
 				x, local_n, MPI_DOUBLE, comm);
 
-
-			printf("At phase = %d proc = %d, we have x containing:\n", phase, my_rank);
-			for (i = 0; i < n; i++)
-				printf("%f\n", x[i]);
-			printf("\n");
-
+			if (my_rank == 0) {
+				printf("At phase = %d proc = %d, we have x containing:\n", phase, my_rank);
+				for (i = 0; i < n; i++)
+					printf("%f\n", x[i]);
+				printf("\n");
+			}	
 
 			for (i = 0; i < local_n; i++) {
 				local_y[i] = 0;
+				int tsum = 0;
+				int pos = my_rank*comm_sz+i;
 				for (j = 0; j < n; j++) {
-					local_y[i] += x[j]; // simple op - sum of all x
+					if (pos != j) // y[i] is not x[j]
+						tsum += (x[j]*local_A[i*n+j]);
 				}
-				// printf("--before: At phase %d proc %d, local_xy[%d] is %f\n", phase, my_rank, i, local_y[i]);
-				local_y[i] += 1; // and plus 1
+				tsum = local_b[i] - tsum;
+				local_y[i] = tsum / local_A[i*n+pos];
 				// printf("--after: At phase %d proc %d, local_xy[%d] is %f\n", phase, my_rank, i, local_y[i]);
 			} // values updated
 			MPI_Barrier(comm); // wait for all processes to complete update
@@ -288,21 +297,24 @@ void Update_x(
 			MPI_Allgather(local_y, local_n, MPI_DOUBLE, 
 				x, local_n, MPI_DOUBLE, comm);
 
-			
-			printf("At phase = %d proc = %d, we have x containing:\n", phase, my_rank);
-			for (i = 0; i < n; i++)
-				printf("%f\n", x[i]);
-			printf("\n");
-		
+			if (my_rank == 0) {
+				printf("At phase = %d proc = %d, we have x containing:\n", phase, my_rank);
+				for (i = 0; i < n; i++)
+					printf("%f\n", x[i]);
+				printf("\n");
+			}
 
 			for (i = 0; i < local_n; i++) {
 				local_x[i] = 0;
+				int tsum = 0;
+				int pos = my_rank*comm_sz+i;
 				for (j = 0; j < n; j++) {
-					local_x[i] += x[j]; // simple op - sum of all x
+					if (pos != j) // y[i] is not x[j]
+						tsum += (x[j]*local_A[i*n+j]);
 				}
-				// printf("--before: At phase %d proc %d, local_xy[%d] is %f\n", phase, my_rank, i, local_x[i]);
-				local_x[i] += 1; // and plus 1
-				// printf("--after: At phase %d proc %d, local_xy[%d] is %f\n", phase, my_rank, i, local_x[i]);
+				tsum = local_b[i] - tsum;
+				local_x[i] = tsum / local_A[i*n+pos];
+				// printf("--after: At phase %d proc %d, local_xy[%d] is %f\n", phase, my_rank, i, local_y[i]);
 			} // values updated
 			MPI_Barrier(comm); // wait for all processes to complete update
 			phase++;
