@@ -295,6 +295,11 @@ void Update_x(
 					local_test[i] = 0;
 				else
 					local_test[i] = 1;
+				printf("At phase = %d proc = %d, we have test containing:\n", phase, my_rank);
+				for (j = 0; j < local_n; j++)
+					printf("%d\n", local_test[j]);
+				printf("\n");
+
 				// printf("--after: At phase %d proc %d, pos is %d, local_xy[%d] is %f\n", phase, my_rank, pos, i, local_y[i]);
 			} // values updated
 			MPI_Barrier(comm); // wait for all processes to complete update
@@ -324,6 +329,10 @@ void Update_x(
 					local_test[i] = 0;
 				else
 					local_test[i] = 1;
+				printf("At phase = %d proc = %d, we have test containing:\n", phase, my_rank);
+				for (j = 0; j < local_n; j++)
+					printf("%d\n", local_test[j]);
+				printf("\n");
 				// printf("--after: At phase %d proc %d, local_xy[%d] is %f\n", phase, my_rank, i, local_y[i]);
 			} // values updated
 			MPI_Barrier(comm); // wait for all processes to complete update
