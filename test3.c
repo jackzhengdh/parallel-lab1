@@ -358,14 +358,8 @@ void Update_x(
 				printf("%f\n", x[j]);
 			printf("total number of iterations: %d\n", phase);
 			phase = -1;
+			MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
 		}
-		if (my_rank == 0)
-			MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
-		else
-			MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
-
-		// else if (cnt == 0)
-		// 	MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
 	}
 }
 
