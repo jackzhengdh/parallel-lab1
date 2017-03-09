@@ -265,12 +265,12 @@ void Update_x(
 			MPI_Allgather(local_x, local_n, MPI_DOUBLE, 
 				x, local_n, MPI_DOUBLE, comm);
 
-			if (my_rank == 0) {
-				printf("At phase = %d, we have x containing:\n", phase);
-				for (i = 0; i < n; i++)
-					printf("%f\n", x[i]);
-				printf("\n");
-			}
+
+			printf("At phase = %d proc = %d, we have x containing:\n", phase, my_rank);
+			for (i = 0; i < n; i++)
+				printf("%f\n", x[i]);
+			printf("\n");
+
 
 			for (i = 0; i < local_n; i++) {
 				for (j = 0; j < n; j++) {
@@ -287,12 +287,12 @@ void Update_x(
 			MPI_Allgather(local_y, local_n, MPI_DOUBLE, 
 				x, local_n, MPI_DOUBLE, comm);
 
-			if (my_rank == 0) {
-				printf("At phase = %d, we have x containing:\n", phase);
-				for (i = 0; i < n; i++)
-					printf("%f\n", x[i]);
-				printf("\n");
-			}
+			
+			printf("At phase = %d proc = %d, we have x containing:\n", phase, my_rank);
+			for (i = 0; i < n; i++)
+				printf("%f\n", x[i]);
+			printf("\n");
+		
 
 			for (i = 0; i < local_n; i++) {
 				for (j = 0; j < n; j++) {
