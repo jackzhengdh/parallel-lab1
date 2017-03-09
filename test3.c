@@ -267,6 +267,7 @@ void Update_x(
 	local_test = malloc(n*sizeof(int));
 
 	while (1) {
+		printf("ready to call bcast...\n");
 		MPI_Bcast(&contd, 1, MPI_INT, 0, comm);
 		if (contd != 0)
 			break;
