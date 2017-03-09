@@ -359,11 +359,8 @@ void Update_x(
 			printf("total number of iterations: %d\n", phase);
 			phase = -10;
 		}
-		MPI_Barrier(comm);
-		if (cnt == 0) {
-			printf("Enters after phase = -10, cnt = 0\n");
-			MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
-		}	
+		printf("Enters after phase = -10, cnt = 0\n");
+		MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
 	}
 }
 
