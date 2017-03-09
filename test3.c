@@ -284,14 +284,14 @@ void Update_x(
 			for (i = 0; i < local_n; i++) {
 				local_y[i] = 0;
 				double tsum = 0;
-				int pos = my_rank*comm_sz+i;
+				int pos = my_rank*local_n+i;
 				for (j = 0; j < n; j++) {
 					if (pos != j) // y[i] is not x[j]
 						tsum += (x[j]*local_A[i*n+j]);
 				}
 				tsum = local_b[i] - tsum;
 				local_y[i] = tsum / local_A[i*n+pos];
-				printf("--after: At phase %d proc %d, pos is %d, local_xy[%d] is %f\n", phase, my_rank, pos, i, local_y[i]);
+				// printf("--after: At phase %d proc %d, pos is %d, local_xy[%d] is %f\n", phase, my_rank, pos, i, local_y[i]);
 			} // values updated
 			MPI_Barrier(comm); // wait for all processes to complete update
 			phase++;
@@ -310,7 +310,7 @@ void Update_x(
 			for (i = 0; i < local_n; i++) {
 				local_x[i] = 0;
 				double tsum = 0;
-				int pos = my_rank*comm_sz+i;
+				int pos = my_rank*local_n+i;
 				for (j = 0; j < n; j++) {
 					if (pos != j) // y[i] is not x[j]
 						tsum += (x[j]*local_A[i*n+j]);
