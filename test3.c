@@ -346,7 +346,7 @@ void Update_x(
 					printf("%f\n", x[j]);
 				printf("%d\n", phase);
 				phase = -2;
-				MPI_Bcast(phase, 1, MPI_INT, 0, comm);
+				MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
 			}
 		}
 		phase++;
