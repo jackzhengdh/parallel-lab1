@@ -277,6 +277,7 @@ void Update_x(
 					local_y[i] += x[j]; // simple op - sum of all x
 				}
 				local_y[i] += 1; // and plus 1
+				printf("At phase %d proc %d, local_xy[%d] is %f\n", phase, my_rank, i, local_y[i]);
 			} // values updated
 			MPI_Barrier(comm); // wait for all processes to complete update
 			phase++;
@@ -297,6 +298,7 @@ void Update_x(
 					local_x[i] += x[j]; // simple op - sum of all x
 				}
 				local_x[i] += 1; // and plus 1
+				printf("At phase %d proc %d, local_xy[%d] is %f\n", phase, my_rank, i, local_x[i]);
 			} // values updated
 			MPI_Barrier(comm); // wait for all processes to complete update
 			phase++;
