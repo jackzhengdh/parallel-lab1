@@ -267,10 +267,6 @@ void Update_x(
 	local_test = malloc(n*sizeof(int));
 
 	while (1) {
-		printf("ready to call bcast...\n");
-		MPI_Bcast(&contd, 1, MPI_INT, 0, comm);
-		if (contd != 0)
-			break;
 		if (phase > 10 || phase < 0) {
 			printf("Process %d breaking at phase = 5\n", my_rank);
 			break;
@@ -352,7 +348,7 @@ void Update_x(
 		for (i = 0; i < n; i++)
 			cnt += test[i];
 		if (cnt == 0)
-			// printf("***** cnt == 0 \n");
+			printf("***** cnt == 0 \n");
 		if (cnt == 0 && my_rank == 0) {
 			// printf("Enteres cnt = 0, my_rank = 0\n");
 			if (phase % 2 == 0) {
@@ -365,8 +361,9 @@ void Update_x(
 			for (j = 0; j < n; j++)
 				printf("%f\n", x[j]);
 			printf("total number of iterations: %d\n", phase);
-			contd = 1;
 		}
+		if (cnt == 0)
+			break;
 	}
 }
 
