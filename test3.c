@@ -291,7 +291,7 @@ void Update_x(
 				}
 				tsum = local_b[i] - tsum;
 				local_y[i] = tsum / local_A[i*n+pos];
-				printf("--after: At phase %d proc %d, local_xy[%d] is %f\n", phase, my_rank, i, local_y[i]);
+				printf("--after: At phase %d proc %d, pos is %d, local_xy[%d] is %f\n", phase, my_rank, pos, i, local_y[i]);
 			} // values updated
 			MPI_Barrier(comm); // wait for all processes to complete update
 			phase++;
