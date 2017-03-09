@@ -351,10 +351,10 @@ void Update_x(
 		if (cnt == 0 && my_rank == 0) {
 			printf("Enters if cnt == 0 stage..\n");
 			if (phase % 2 == 0) {
-				MPI_Allgather(local_y, local_n, MPI_DOUBLE,
+				MPI_Allgather(local_x, local_n, MPI_DOUBLE,
 					x, local_n, MPI_DOUBLE, comm);
 			} else {
-				MPI_Allgather(local_x, local_n, MPI_DOUBLE,
+				MPI_Allgather(local_y, local_n, MPI_DOUBLE,
 					x, local_n, MPI_DOUBLE, comm);
 			}
 			for (j = 0; j < n; j++)
