@@ -340,7 +340,7 @@ void Update_x(
 			// printf("\n");
 			MPI_Barrier(comm); // wait for all processes to complete update
 		}
-
+		printf("After updating values\n");
 		MPI_Allgather(local_test, local_n, MPI_INT,
 			test, local_n, MPI_INT, comm);
 		int cnt = 0;
@@ -357,8 +357,12 @@ void Update_x(
 			for (j = 0; j < n; j++)
 				printf("%f\n", x[j]);
 			printf("total number of iterations: %d\n", phase);
-			MPI_Abort(comm);
+			phase = -10;
 		}
+		if (cnt == 0) {
+			printf("Enters after phase = -10, cnt = 0\n")
+			MPI_Bcast(&phase, 1, MPI_INT, 0, comm);;
+		}	
 	}
 }
 
