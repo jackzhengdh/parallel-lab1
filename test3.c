@@ -88,7 +88,7 @@ void Read_top(
 	int local_ok = 1;
 
 	if (my_rank == 0) {
-		printf("Reading numbers...\n");
+		// printf("Reading numbers...\n");
 		fscanf(fp, "%d", n_p);
 		fscanf(fp, "%lf", err_p);
 
@@ -122,7 +122,7 @@ void Allocate_arrays(
 	int 		local_n		/* in  */,
 	MPI_Comm 	comm 		/* in  */) {
 
-	printf("Allocating arrays...\n");
+	// printf("Allocating arrays...\n");
 	int local_ok = 1;
 
 	*local_A_pp = malloc(local_n*n*sizeof(double));
@@ -145,7 +145,7 @@ void Read_content(
 	int 		my_rank 	/* in  */,
 	MPI_Comm 	comm 		/* in  */) {
 
-	printf("Reading content...\n");
+	// printf("Reading content...\n");
 	double* A = NULL;
 	double* b = NULL;
 	double* x = NULL;
@@ -197,7 +197,7 @@ void Print_content(
 	int 		my_rank 	/* in */,
 	MPI_Comm 	comm 		/* in */) {
 
-	printf("Printing content...\n");
+	// printf("Printing content...\n");
 
 	double* A = NULL;
 	double* b = NULL;
@@ -329,12 +329,15 @@ void Update_x(
 			MPI_Barrier(comm); // wait for all processes to complete update
 		}
 		if (my_rank == 0) {
+			printf("Entered testing end condition stage..\n");
 			MPI_Gather(local_test, local_n, MPI_INT,
 				test, local_n, MPI_INT, 0, comm);
 			int cnt = 0;
 			for (i = 0; i < n; i++)
 				cnt += test[i];
+			printf("Finished incrementing cnt\n");
 			if (cnt == 0) {
+				printf("Enters if cnt == 0 stage..\n");
 				if (phase % 2 == 0) {
 					MPI_Gather(local_y, local_n, MPI_DOUBLE,
 						x, local_n, MPI_DOUBLE, 0, comm);
