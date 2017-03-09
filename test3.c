@@ -341,15 +341,12 @@ void Update_x(
 			MPI_Barrier(comm); // wait for all processes to complete update
 		}
 
-		// printf("Entered testing end condition stage..\n");
 		MPI_Allgather(local_test, local_n, MPI_INT,
 			test, local_n, MPI_INT, comm);
 		int cnt = 0;
 		for (i = 0; i < n; i++)
 			cnt += test[i];
-		// printf("Finished incrementing cnt\n");
 		if (cnt == 0 && my_rank == 0) {
-			printf("Enters if cnt == 0 stage..\n");
 			if (phase % 2 == 0) {
 				MPI_Allgather(local_x, local_n, MPI_DOUBLE,
 					x, local_n, MPI_DOUBLE, comm);
@@ -359,10 +356,12 @@ void Update_x(
 			}
 			for (j = 0; j < n; j++)
 				printf("%f\n", x[j]);
-			printf("%d\n", phase);
+			printf("total number of iterations: %d\n", phase);
 			phase = -1;
 			MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
 		}
+		else if (cnt == 0)
+			MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
 	}
 }
 
