@@ -347,10 +347,9 @@ void Update_x(
 		int cnt = 0;
 		for (i = 0; i < n; i++)
 			cnt += test[i];
-		if (cnt == 0)
-			printf("***** cnt == 0 \n");
-		if (cnt == 0 && my_rank == 0) {
-			printf("Enteres cnt = 0, my_rank = 0\n");
+
+		if (cnt == 0) {
+			printf("cnt is now 0\n");
 			if (phase % 2 == 0) {
 				MPI_Allgather(local_x, local_n, MPI_DOUBLE,
 					x, local_n, MPI_DOUBLE, comm);
@@ -358,9 +357,12 @@ void Update_x(
 				MPI_Allgather(local_y, local_n, MPI_DOUBLE,
 					x, local_n, MPI_DOUBLE, comm);
 			}
-			for (j = 0; j < n; j++)
-				printf("%f\n", x[j]);
-			printf("total number of iterations: %d\n", phase);
+			if (my_rank == 0) {
+				for (j = 0; j < n; j++)
+					printf("%f\n", x[j]);
+				printf("total number of iterations: %d\n", phase);
+			}
+			break;	
 		}
 		// if (cnt == 0)
 		// 	break;
