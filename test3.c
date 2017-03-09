@@ -266,11 +266,12 @@ void Update_x(
 	local_test = malloc(n*sizeof(int));
 
 	while (1) {
-		if (phase == 10 || phase < 0) {
+		if (phase > 10 || phase < 0) {
 			printf("Process %d breaking at phase = 5\n", my_rank);
 			break;
 		}	
 		if (phase % 2 == 0) {
+			phase++;
 			MPI_Allgather(local_x, local_n, MPI_DOUBLE, 
 				x, local_n, MPI_DOUBLE, comm);
 
@@ -305,6 +306,7 @@ void Update_x(
 			MPI_Barrier(comm); // wait for all processes to complete update
 		}
 		else {
+			phase++;
 			MPI_Allgather(local_y, local_n, MPI_DOUBLE, 
 				x, local_n, MPI_DOUBLE, comm);
 
@@ -346,7 +348,7 @@ void Update_x(
 		for (i = 0; i < n; i++)
 			cnt += test[i];
 		// printf("Finished incrementing cnt\n");
-		if (cnt == 0) {
+		if (cnt == 0 && my_rank == 0) {
 			printf("Enters if cnt == 0 stage..\n");
 			if (phase % 2 == 0) {
 				MPI_Gather(local_y, local_n, MPI_DOUBLE,
@@ -358,10 +360,9 @@ void Update_x(
 			for (j = 0; j < n; j++)
 				printf("%f\n", x[j]);
 			printf("%d\n", phase);
-			phase = -2;
+			phase = -1;
 			MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
 		}
-		phase++;
 	}
 }
 
