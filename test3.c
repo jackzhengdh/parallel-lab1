@@ -11,16 +11,19 @@ void Read_top(FILE* fp, int* n_p, int* local_n_p, double* err_p,
 	int my_rank, int comm_sz, MPI_Comm comm);
 void Print_top(int n, double err, int my_rank, MPI_Comm comm);
 void Allocate_arrays(double** local_A, double** local_b, double** local_x,
-	int n, int local_n, MPI_Comm comm);
+	double** local_y, int n, int local_n, MPI_Comm comm);
 void Read_content(FILE* fp, double local_A[], double local_b[], 
 	double local_x[], int n, int local_n, int my_rank, MPI_Comm comm);
 void Print_content(double local_A[], double local_b[], double local_x[],
 	int n, int local_n, int my_rank, MPI_Comm comm);
+void Update_x(double local_x[], double local_y[], int n, int local_n,
+	int my_rank, MPI_Comm comm);
 
 int main(int argc, char* argv[]) {
 	double* local_A;
 	double* local_b;
 	double* local_x;
+	double* local_y; // buffer storage for local_x during odd phases
 	int n, local_n;
 	double err;
 	int my_rank, comm_sz;
@@ -39,10 +42,11 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(comm, &my_rank);
 
 	Read_top(fp, &n, &local_n, &err, my_rank, comm_sz, comm);
-	Allocate_arrays(&local_A, &local_b, &local_x, n, local_n, comm);
+	Allocate_arrays(&local_A, &local_b, &local_x, &local_y, n, local_n, comm);
 	Read_content(fp, local_A, local_b, local_x, n, local_n, my_rank, comm);
-	Print_top(n, err, my_rank, comm);
-	Print_content(local_A, local_b, local_x, n, local_n, my_rank, comm);
+	// Print_top(n, err, my_rank, comm);
+	// Print_content(local_A, local_b, local_x, n, local_n, my_rank, comm);
+	Update_x(local_x, local_y, n, local_n, my_rank, comm);
 	if (my_rank == 0)
 		fclose(fp);
 	MPI_Finalize();
@@ -111,6 +115,7 @@ void Allocate_arrays(
 	double** 	local_A_pp 	/* out */,
 	double** 	local_b_pp 	/* out */,
 	double** 	local_x_pp 	/* out */,
+	double** 	local_y_pp	/* out */,
 	int 		n 			/* in  */,
 	int 		local_n		/* in  */,
 	MPI_Comm 	comm 		/* in  */) {
@@ -121,9 +126,10 @@ void Allocate_arrays(
 	*local_A_pp = malloc(local_n*n*sizeof(double));
 	*local_b_pp = malloc(local_n*sizeof(double));
 	*local_x_pp = malloc(local_n*sizeof(double));
+	*local_y_pp = malloc(local_n*sizeof(double));
 
 	if (*local_A_pp == NULL || *local_b_pp == NULL ||
-		*local_x_pp == NULL) local_ok = 0;
+		*local_x_pp == NULL || *local_y_pp == NULL) local_ok = 0;
 	Check_for_error(local_ok, "Allocate_arrays",
 		"Cannot allocate local arrays", comm);
 }
@@ -197,19 +203,6 @@ void Print_content(
 	int i, j;
 	int local_ok = 1;
 
-	int r;
-	for (r = 0; r < 4; r++) {
-		if (my_rank == r) {
-			printf("***************** my_rank = %d *****************\n", my_rank);
-			for (i = 0; i < local_n; i++) {
-				for (j = 0; j < n; j++)
-					printf("%f ", local_A[i*n+j]);
-				printf("%f\n", local_b[i]);
-			}			
-		}
-	}
-
-
 	if (my_rank == 0) {
 		A = malloc(n*n*sizeof(double));
 		b = malloc(n*sizeof(double));
@@ -247,6 +240,81 @@ void Print_content(
 			x, local_n, MPI_DOUBLE, 0, comm);
 	}
 }
+
+void Update_x(
+	double 		local_x[] 	/* in  */,
+	double 		local_y[] 	/* out */,	
+	int 		n 			/* in  */,
+	int 		local_n 	/* in  */, 
+	int 		my_rank 	/* in  */,
+	MPI_Comm 	comm 		/* in  */) {
+
+	int phase = 0;
+	int i, j;
+
+	double* x = NULL;
+	x = malloc(n*sizeof(double));
+
+
+	while (1) {
+		if (phase == 5)  {
+			printf("Process %d breaking at phase = 5\n", my_rank);
+			break;
+		}	
+		if (phase % 2 == 0) {
+			MPI_Allgather(local_x, local_n, MPI_DOUBLE, 
+				x, local_n, MPI_DOUBLE, comm);
+
+			if (my_rank == 0) {
+				printf("At phase = %d, we have x containing:\n", phase);
+				for (i = 0; i < n; i++)
+					printf("%f\n", x[i]);
+				printf("\n");
+			}
+
+			for (i = 0; i < local_n; i++) {
+				for (j = 0; j < n; j++) {
+					local_y[i] += x[j]; // simple op - sum of all x
+				}
+				local_y[i] += 1; // and plus 1
+			} // values updated
+			MPI_Barrier(comm); // wait for all processes to complete update
+			phase++;
+		}
+		else {
+			MPI_Allgather(local_y, local_n, MPI_DOUBLE, 
+				x, local_n, MPI_DOUBLE, comm);
+
+			if (my_rank == 0) {
+				printf("At phase = %d, we have x containing:\n", phase);
+				for (i = 0; i < n; i++)
+					printf("%f\n", x[i]);
+				printf("\n");
+			}
+
+			for (i = 0; i < local_n; i++) {
+				for (j = 0; j < n; j++) {
+					local_x[i] += x[j]; // simple op - sum of all x
+				}
+				local_x[i] += 1; // and plus 1
+			} // values updated
+			MPI_Barrier(comm); // wait for all processes to complete update
+			phase++;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
