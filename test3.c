@@ -357,8 +357,7 @@ void Update_x(
 			for (j = 0; j < n; j++)
 				printf("%f\n", x[j]);
 			printf("total number of iterations: %d\n", phase);
-			phase = -1;
-			MPI_Bcast(&phase, 1, MPI_INT, 0, comm);
+			MPI_Abort(comm);
 		}
 	}
 }
