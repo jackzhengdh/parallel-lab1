@@ -266,7 +266,7 @@ void Update_x(
 	x = malloc(n*sizeof(double));
 
 	while (1) {
-		if (phase == 5)  {
+		if (phase == 10)  {
 			printf("Process %d breaking at phase = 5\n", my_rank);
 			break;
 		}	
